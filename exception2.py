@@ -4,23 +4,36 @@
 
 Исключения: приведение типов
 
-* Напишите функцию get_summ(num_one, num_two), которая принимает 
-  на вход два целых числа (int), складывает их и возвращает результат 
-  сложения
-* Оба аргумента нужно приводить к целому числу при помощи int() и 
-  перехватывать исключение ValueError если приведение типов не сработало
+Перепишите функцию discounted(price, discount, max_discount=20)из урока про функции так, 
+чтобы она перехватывала исключения, когда переданы некорректные аргументы 
+(например, строки вместо чисел).
     
 """
 
-def get_summ(num_one, num_two):
-    """
-    Замените pass на ваш код
-    """
-    pass
+def discounted(price, discount, max_discount=20):
+    try:
+        price = abs(float(price))
+        discount = abs(float(discount))
+        max_discount = abs(float(max_discount))
+        if max_discount > 99:
+            raise ValueError('Слишком большая максимальная скидка')
+        if discount >= max_discount:
+            raise ValueError('Скидка больше максимальной')
+        else:
+            return price - (price * discount / 100)
+    except (ArithmeticError,ValueError,TypeError) as e:
+        print('Исключение: ',e)
+        return price    
+       
     
 if __name__ == "__main__":
-    print(get_summ(2, 2))
-    print(get_summ(3, "3"))
-    print(get_summ("4", "4"))
-    print(get_summ("five", 5))
-    print(get_summ("six", "шесть"))
+    print(f'discounted(1000, 10) = {discounted(1000, 10)}')
+    print('##########################################')
+    print(f'discounted(1000, 10, 100) = {discounted(1000, 10, 100)}')
+    print('##########################################')
+    print(f'discounted(1000, 50) = {discounted(1000, 50)}')
+    print('##########################################')
+    print(f"discounted('fds2', 10) = {discounted('fds2', 10)}")
+    print('##########################################')
+    print(f"(discounted(1000, 'dddx') = {discounted(1000, 'dddx')}")
+
