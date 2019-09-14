@@ -22,7 +22,7 @@ def discounted(price, discount, max_discount=20):
         else:
             return price - (price * discount / 100)
     except (ArithmeticError,ValueError,TypeError) as e:
-        print('Исключение: ',e)
+        print('Исключение: ',e)#давай аккуратно выведем на экран, что не так, человеческим языком, а вход принимать из инпута
         return price    
        
     
