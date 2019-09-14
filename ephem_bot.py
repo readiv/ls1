@@ -24,13 +24,13 @@ logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
 
 def greet_user(bot, update):
     if update == None or update.message == None:
-        return #Периоди́чески возникает такая хрень    
-    update.message.reply_text('Привет! Я ephem bot')
+        return #Периоди́чески возникает такая хрень    #смог проследить, когда? Это лучше на уровне хэндлеров разруливать, а не внутри функции
+    update.message.reply_text('Привет! Я ephem bot') #давай ещё здороваться по имени или юзернейму
     update.message.reply_text('Хотите узнать, в каком созвездии находится Ваша планета сегодня? Введите /planet название планеты на английском')
 
 def planet(bot, update):
     edata = datetime.date.today()
-    edata = str(edata.year)+'/'+str(edata.month)+'/'+str(edata.day)
+    edata = str(edata.year)+'/'+str(edata.month)+'/'+str(edata.day) #посмотри “datetime tostring” 
     ephem_dic = {'mars':ephem.Mars(edata),
                  'moon':ephem.Moon(edata),
                  'mercury':ephem.Mercury(edata),
@@ -56,10 +56,10 @@ def planet(bot, update):
             raise ValueError('Ошибка. Я не знаю такой планеты')
             
         update.message.reply_text(f'Планета {text.upper()} сегодня находится в созвездии "{const[1].upper()}"')  
-    except ValueError as e:
+    except ValueError as e: # у тебя по смыслу тут ловится только ошибка «отсутствие в словаре» давай тогда только эту операцию транс и обернём, будет правильней
         update.message.reply_text(str(e))
         update.message.reply_text('Вы должны набрать /planet планета')
-        update.message.reply_text('Сейчас я знаю такие планеты: '+str(list(ephem_dic))[1:-1])
+        update.message.reply_text('Сейчас я знаю такие планеты: '+str(list(ephem_dic))[1:-1]) #давай с большой буквы выведем планеты
 
 def talk_to_me(bot, update): 
     user_text = update.message.text 
