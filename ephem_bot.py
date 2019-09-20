@@ -25,12 +25,19 @@ logging.basicConfig(format='%(name)s - %(levelname)s - %(message)s',
 def greet_user(bot, update):
     if update == None or update.message == None:
         return #Периоди́чески возникает такая хрень    #смог проследить, когда? Это лучше на уровне хэндлеров разруливать, а не внутри функции
-    update.message.reply_text('Привет! Я ephem bot') #давай ещё здороваться по имени или юзернейму
+               #Нет. Повторяемость проследить не удалось. Пару раз вылезла - добавил. Немного непонятно как разрулить по хэндлерам. 
+               #Если хэндлер сработал, по логике update должен быть заполнен, а он пуст... 
+               #Как вмешаться в работу хэндлера? Не лезть же библиотеку править. 
+               #Прокси у меня нет, т.к. тут телегу не блочат. Возможно какой то глюк телеги был.
+    update.message.reply_text(f"Привет {update.message.chat['first_name']}\n Я Ephem Bot") #давай ещё здороваться по имени или юзернейму #Сделал
     update.message.reply_text('Хотите узнать, в каком созвездии находится Ваша планета сегодня? Введите /planet название планеты на английском')
 
 def planet(bot, update):
-    edata = datetime.date.today()
-    edata = str(edata.year)+'/'+str(edata.month)+'/'+str(edata.day) #посмотри “datetime tostring” 
+    if update == None or update.message == None:
+            return #Периоди́чески возникает такая хрень
+        
+    edata = f"{datetime.datetime.today():%Y/%m/%d}" #посмотри “datetime tostring” #Думаю так будет лучше 
+
     ephem_dic = {'mars':ephem.Mars(edata),
                  'moon':ephem.Moon(edata),
                  'mercury':ephem.Mercury(edata),
@@ -40,26 +47,18 @@ def planet(bot, update):
                  'uranus':ephem.Uranus(edata),
                  'neptune':ephem.Neptune(edata),
                  'pluto':ephem.Pluto(edata),
-                 }
-    try:
-        if update == None or update.message == None:
-            return #Периоди́чески возникает такая хрень
-        text = update.message.text.split(' ')
-        if len(text)<2:
-            raise ValueError('Ошибка. Вы не ввели название планеты')
+                 } 
+
+    text = update.message.text.split(' ')
+    try:        
         text = text[1].lower() #Получили название планеты
-        ephem_one = ephem_dic.get(text) 
-        if ephem_one==None:
-            raise ValueError('Ошибка. Я не знаю такой планеты')
-        const = ephem.constellation(ephem_one)
-        if len(const) != 2: #На всякий случай
-            raise ValueError('Ошибка. Я не знаю такой планеты')
-            
+        ephem_one = ephem_dic[text]
+        const = ephem.constellation(ephem_one)            
         update.message.reply_text(f'Планета {text.upper()} сегодня находится в созвездии "{const[1].upper()}"')  
-    except ValueError as e: # у тебя по смыслу тут ловится только ошибка «отсутствие в словаре» давай тогда только эту операцию транс и обернём, будет правильней
-        update.message.reply_text(str(e))
-        update.message.reply_text('Вы должны набрать /planet планета')
-        update.message.reply_text('Сейчас я знаю такие планеты: '+str(list(ephem_dic))[1:-1]) #давай с большой буквы выведем планеты
+    except: # у тебя по смыслу тут ловится только ошибка «отсутствие в словаре» давай тогда только эту операцию транс и обернём, будет правильней
+        update.message.reply_text('Я вас не понял. Вы должны набрать /planet планета')
+        update.message.reply_text('Сейчас я знаю такие планеты: '+str([x.capitalize() for x in list(ephem_dic)])[1:-1]) #давай с большой буквы выведем планеты
+        
 
 def talk_to_me(bot, update): 
     user_text = update.message.text 
